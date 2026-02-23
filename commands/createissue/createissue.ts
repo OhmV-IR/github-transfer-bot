@@ -31,8 +31,7 @@ export default {
                 .setRequired(true)
                 .addChoices(
                         { name: "Rebar", value: "pylonmc/rebar" },
-                        { name: "Pylon", value: "pylonmc/pylon" },
-                        {"name": "test", "value": "OhmV-IR/github-transfer-bot"}
+                        { name: "Pylon", value: "pylonmc/pylon" }
                 )
         )
         .addStringOption(opt => 
