@@ -1,0 +1,25 @@
+{
+  "name": "github-transfer-bot",
+  "version": "1.0.0",
+  "description": "Discord bot to transfer issues from a forum post onto a github repository",
+  "homepage": "https://github.com/OhmV-IR/github-transfer-bot#readme",
+  "bugs": {
+    "url": "https://github.com/OhmV-IR/github-transfer-bot/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OhmV-IR/github-transfer-bot.git"
+  },
+  "license": "ISC",
+  "author": "OhmV-IR",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@octokit/rest": "^22.0.1",
+    "discord.js": "^14.25.1",
+    "dotenv": "^17.3.1"
+  }
+}
