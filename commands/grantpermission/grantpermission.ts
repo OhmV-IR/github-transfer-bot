@@ -14,21 +14,30 @@ export default {
      
      async execute(interaction: ChatInputCommandInteraction){
       await interaction.deferReply();
-      const user = interaction.options.getMember("user");
-      if(!user || !(user instanceof GuildMember) ){
-         interaction.editReply("ERROR: Cannot get the user to give permission to");
+      const userOpt = interaction.options.getUser("user");
+      if(!userOpt){
+         await interaction.editReply("ERROR: No user provided");
          return;
       }
       if(!interaction.guild){
-         interaction.editReply("ERROR: Could not find server this was called from");
+         await interaction.editReply("ERROR: Could not find server this was called from");
+         return;
+      }
+      const user = await interaction.guild?.members.fetch(userOpt.id);
+      if(!user){
+         await interaction.editReply("ERROR: Cannot get the user to give permission to");
+         return;
+      }
+      if(!interaction.guild){
+         await interaction.editReply("ERROR: Could not find server this was called from");
          return;
       }
       if(!(interaction.member instanceof GuildMember)){
-         interaction.editReply("ERROR: Could not find the member running this command");
+         await interaction.editReply("ERROR: Could not find the member running this command");
          return;
       }
       if(!interaction.member.permissions.has(PermissionFlagsBits.Administrator)){
-         interaction.editReply("ERROR: Only people with the Administrator permission can execute this command");
+         await interaction.editReply("ERROR: Only people with the Administrator permission can execute this command");
          return;
       }
       let role = interaction.guild.roles.cache.find(r => r.name === permissionRoleName)
