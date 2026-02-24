@@ -35,7 +35,6 @@ export default {
       if(!role){
          role = await interaction.guild.roles.create({
             name: permissionRoleName,
-            color: "Orange",
             reason: "Created GH issue creator role",
          });
       }

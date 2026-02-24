@@ -44,13 +44,7 @@ export default async function initializeCommands(){
 
     try {
         console.log(`Refreshing ${commands.length} commands`);
-        // If TEST_GUILD_ID is set, register to that guild for instant updates during development
-        if (process.env.TEST_GUILD_ID) {
-            console.log(`Registering commands to test guild ${process.env.TEST_GUILD_ID}`);
-            await rest.put(Routes.applicationGuildCommands(clientId, process.env.TEST_GUILD_ID), { body: commands });
-        } else {
-            await rest.put(Routes.applicationCommands(clientId), { body: commands });
-        }
+        await rest.put(Routes.applicationCommands(clientId), { body: commands });
         console.log('Commands refreshed');
     } catch (err) {
         console.error('Failed refreshing commands', err);
