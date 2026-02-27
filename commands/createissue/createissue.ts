@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, GuildMember, PermissionFlagsBits, SlashCom
 import { Octokit } from "@octokit/rest";
 import { permissionRoleName } from "../grantpermission/grantpermission.js";
 import { throttling } from "@octokit/plugin-throttling";
+import { tagsToAdd } from "../addmovedtag/addmovedtag.js";
 
 if (!process.env.GITHUB_TOKEN) {
     throw new Error("No github token configured");
@@ -54,6 +55,11 @@ export default {
         .addBooleanOption(opt =>
             opt.setName("close_post")
                 .setDescription("Whether or not the post should be closed after the issue is created")
+                .setRequired(false)
+        )
+        .addBooleanOption(opt =>
+            opt.setName("add_tags")
+                .setDescription("Whether or not to add the tags configured by /addmovedtag to the post. On by default")
                 .setRequired(false)
         ),
 
@@ -119,10 +125,22 @@ export default {
                 issue_number: res.data.number,
                 body: `**Message from ${msg[1].author.username}:**\n${msg[1].cleanContent}\n${attachmentString}`
             })
-            
+
         }
         if (interaction.options.getBoolean("close_post") === true && !(interaction.channel.archived || interaction.channel.locked)) {
             await interaction.channel.setLocked(true);
+        }
+        if (interaction.options.getBoolean("add_tags") === false) {
+            let newAppliedTags = [...interaction.channel.appliedTags];
+            for (const tagId of tagsToAdd) {
+                if (interaction.channel.appliedTags.some(appliedTagId => tagId === appliedTagId)) {
+                    continue;
+                }
+                newAppliedTags.push(tagId);
+            }
+            if (newAppliedTags.length > interaction.channel.appliedTags.length) {
+                await interaction.channel.setAppliedTags(newAppliedTags);
+            }
         }
         await interaction.editReply(`Successfully created issue [#${res.data.number}](https://github.com/${owner}/${repo}/issues/${res.data.number})\nRate limit remaining: ${res.headers["x-ratelimit-remaining"]}\nRate limit resets at: <t:${res.headers["x-ratelimit-reset"]}:R> with ${res.headers["x-ratelimit-remaining"]} out of ${res.headers["x-ratelimit-limit"]} points remaining`);
     }

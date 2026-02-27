@@ -4,12 +4,15 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import initializeCommands from './commands.js';
+import { LoadTagsFromDisk } from './commands/addmovedtag/addmovedtag.js';
 
 dotenv.config();
 
 const client = new Client({
 	intents: [GatewayIntentBits.GuildMessages, GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent],
 });
+
+LoadTagsFromDisk();
 
 client.login(process.env.DISCORD_TOKEN);
 

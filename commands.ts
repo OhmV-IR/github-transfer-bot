@@ -5,7 +5,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import dotenv from 'dotenv';
 dotenv.config();
 
-export default async function initializeCommands(){
+export default async function initializeCommands() {
     const discordToken = process.env.DISCORD_TOKEN;
     if (!discordToken) {
         throw new Error("DISCORD_TOKEN environment variable is not set.");
