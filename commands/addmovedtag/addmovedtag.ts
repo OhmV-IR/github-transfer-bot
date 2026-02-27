@@ -2,7 +2,7 @@ import { ChatInputCommandInteraction, InteractionContextType, PermissionFlagsBit
 import fs from "node:fs";
 import path from "node:path";
 
-export let tagsToAdd: string[] = [];
+export let tagsToAdd: Map<string, string[]> = new Map();
 export const tagsFilePath = "./movedTags.json";
 export const tagsDir = path.dirname(tagsFilePath);
 
@@ -22,7 +22,7 @@ export function LoadTagsFromDisk() {
         return;
     }
     const parsed = JSON.parse(fileContent);
-    if (Array.isArray(parsed)) {
+    if (parsed && parsed instanceof Map) {
         tagsToAdd = parsed;
     }
 }
@@ -35,6 +35,11 @@ export default {
             opt.setName("tag_id")
                 .setDescription("The ID of the tag to add to moved posts")
                 .setRequired(true)
+        )
+        .addStringOption(opt => 
+            opt.setName("channel_id")
+            .setDescription("The ID of the channel the tag ID applies to")
+            .setRequired(true)
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .setContexts(InteractionContextType.Guild),
@@ -50,7 +55,14 @@ export default {
             await interaction.editReply("ERROR: No tag ID provided");
             return;
         }
-        tagsToAdd.push(tagId);
+        const channelId = interaction.options.getString("channel_id");
+        if (!channelId) {
+            await interaction.editReply("ERROR: No channel ID provided");
+            return;
+        }
+        const existingTags = tagsToAdd.get(channelId) || [];
+        existingTags.push(tagId);
+        tagsToAdd.set(channelId, existingTags);
         SyncTagsToDisk();
         await interaction.editReply(`Successfully added tag ID ${tagId} to the list of tags to be added to moved posts`);
     }

@@ -1,23 +1,5 @@
 import { ChatInputCommandInteraction, InteractionContextType, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
-import fs from "node:fs";
-
-export let tagsToAdd: string[] = [];
-export const tagsFilePath = "movedTags.json";
-
-export function SyncTagsToDisk() {
-    fs.writeFileSync(tagsFilePath, JSON.stringify(tagsToAdd));
-}
-
-export function LoadTagsFromDisk() {
-    const fileContent = fs.readFileSync(tagsFilePath, "utf-8");
-    if (fileContent == "") {
-        return;
-    }
-    const parsed = JSON.parse(fileContent);
-    if (Array.isArray(parsed)) {
-        tagsToAdd = parsed;
-    }
-}
+import { SyncTagsToDisk, tagsToAdd } from "../addmovedtag/addmovedtag.js";
 
 export default {
     data: new SlashCommandBuilder()
@@ -27,6 +9,11 @@ export default {
             opt.setName("tag_id")
                 .setDescription("The ID of the tag to remove from the list of tags added to moved posts")
                 .setRequired(true)
+        )
+        .addStringOption(opt => 
+            opt.setName("channel_id")
+            .setDescription("The ID of the channel the tag ID applies to")
+            .setRequired(true)
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .setContexts(InteractionContextType.Guild),
@@ -42,12 +29,18 @@ export default {
             await interaction.editReply("ERROR: No tag ID provided");
             return;
         }
-        const index = tagsToAdd.indexOf(tagId);
+        let tagList = tagsToAdd.get(interaction.options.getString("channel_id") ?? "");
+        if(!tagList){
+            await interaction.editReply("ERROR: No tags configured for that channel");
+            return;
+        }
+        const index = tagList.indexOf(tagId);
         if (index === -1) {
             await interaction.editReply(`ERROR: Tag ID ${tagId} is not in the list of moved tags`);
             return;
         }
-        tagsToAdd.splice(index, 1);
+        tagList.splice(index, 1);
+        tagsToAdd.set(interaction.options.getString("channel_id")!, tagList);
         SyncTagsToDisk();
         await interaction.editReply(`Successfully removed tag ID ${tagId} from the list of tags to be added to moved posts`);
     }

@@ -133,7 +133,7 @@ export default {
         }
         if (interaction.options.getBoolean("add_tags") === false) {
             let newAppliedTags = [...interaction.channel.appliedTags];
-            for (const tagId of tagsToAdd) {
+            for (const tagId of tagsToAdd[interaction.channelId]) {
                 if (interaction.channel.appliedTags.some(appliedTagId => tagId === appliedTagId)) {
                     continue;
                 }
