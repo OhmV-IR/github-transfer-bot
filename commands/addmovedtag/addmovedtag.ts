@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -39,6 +39,10 @@ export default {
 
     async execute(interaction: ChatInputCommandInteraction) {
         await interaction.deferReply();
+        if(!interaction.inGuild() || !interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) {
+            await interaction.editReply("ERROR: No permission");
+            return;
+        }
         const tagId = interaction.options.getString("tag_id");
         if (!tagId) {
             await interaction.editReply("ERROR: No tag ID provided");
