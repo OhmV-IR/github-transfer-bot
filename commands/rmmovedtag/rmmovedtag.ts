@@ -24,14 +24,14 @@ export default {
         .setName("rmmovedtag")
         .setDescription("Remove a tag from the list that is added to posts that have their issues moved to github")
         .addStringOption(opt =>
-            opt.setName("tagId")
-                .setDescription("The ID of the tag to remove from the list of tags to add to posts that have their issues moved to github")
+            opt.setName("tag_id")
+                .setDescription("The ID of the tag to remove from the list of tags added to moved posts")
                 .setRequired(true)
         ),
 
     async execute(interaction: ChatInputCommandInteraction) {
         await interaction.deferReply();
-        const tagId = interaction.options.getString("tagId");
+        const tagId = interaction.options.getString("tag_id");
         if (!tagId) {
             await interaction.editReply("ERROR: No tag ID provided");
             return;
