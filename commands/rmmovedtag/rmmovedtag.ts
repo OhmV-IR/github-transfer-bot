@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, InteractionContextType, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import fs from "node:fs";
 
 export let tagsToAdd: string[] = [];
@@ -27,7 +27,9 @@ export default {
             opt.setName("tag_id")
                 .setDescription("The ID of the tag to remove from the list of tags added to moved posts")
                 .setRequired(true)
-        ),
+        )
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+        .setContexts(InteractionContextType.Guild),
 
     async execute(interaction: ChatInputCommandInteraction) {
         await interaction.deferReply();

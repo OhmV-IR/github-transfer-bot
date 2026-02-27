@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, GuildMember, SlashCommandBuilder, PermissionFlagsBits } from "discord.js";
+import { ChatInputCommandInteraction, GuildMember, SlashCommandBuilder, PermissionFlagsBits, InteractionContextType } from "discord.js";
 
 export const permissionRoleName = "GHIssueCreator"
 
@@ -10,7 +10,9 @@ export default {
          opt.setName("user")
             .setDescription("User to grant the permission to create issues to")
             .setRequired(true)
-      ),
+      )
+      .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+      .setContexts(InteractionContextType.Guild),
 
    async execute(interaction: ChatInputCommandInteraction) {
       await interaction.deferReply();

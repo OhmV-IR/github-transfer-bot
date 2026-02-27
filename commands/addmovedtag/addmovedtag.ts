@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, InteractionContextType, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -35,7 +35,9 @@ export default {
             opt.setName("tag_id")
                 .setDescription("The ID of the tag to add to moved posts")
                 .setRequired(true)
-        ),
+        )
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+        .setContexts(InteractionContextType.Guild),
 
     async execute(interaction: ChatInputCommandInteraction) {
         await interaction.deferReply();

@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, GuildMember, PermissionFlagsBits, SlashCommandBuilder, ThreadChannel } from "discord.js";
+import { ChatInputCommandInteraction, GuildMember, InteractionContextType, PermissionFlagsBits, SlashCommandBuilder, ThreadChannel } from "discord.js";
 import { Octokit } from "@octokit/rest";
 import { permissionRoleName } from "../grantpermission/grantpermission.js";
 import { throttling } from "@octokit/plugin-throttling";
@@ -61,7 +61,8 @@ export default {
             opt.setName("add_tags")
                 .setDescription("Whether or not to add the tags configured by /addmovedtag to the post. On by default")
                 .setRequired(false)
-        ),
+        )
+        .setContexts(InteractionContextType.Guild),
 
     async execute(interaction: ChatInputCommandInteraction) {
         await interaction.deferReply();
