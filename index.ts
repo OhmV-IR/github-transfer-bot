@@ -14,17 +14,6 @@ const client = new Client({
 
 LoadTagsFromDisk();
 
-client.login(process.env.DISCORD_TOKEN);
-
-client.once(Events.ClientReady, async readyClient => {
-	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
-	try {
-		await initializeCommands();
-	} catch (err) {
-		console.error('Command initialization failed', err);
-	}
-});
-
 let commands = new Collection<string, any>();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -47,6 +36,21 @@ for (const folder of commandFolders) {
 		}
 	}
 }
+
+async function startBot() {
+    try {
+        await initializeCommands();
+        await client.login(process.env.DISCORD_TOKEN);
+    } catch (err) {
+        console.error('Startup failed:', err);
+		process.exit(1);
+    }
+}
+
+client.once(Events.ClientReady, readyClient => {
+    console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+});
+
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
 
@@ -58,3 +62,5 @@ client.on(Events.InteractionCreate, async interaction => {
 	}
 	command.execute(interaction);
 });
+
+startBot();
