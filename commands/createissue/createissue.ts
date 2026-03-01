@@ -128,7 +128,7 @@ export default {
             })
 
         }
-        if (interaction.options.getBoolean("close_post") === true && !(interaction.channel.archived || interaction.channel.locked)) {
+        if (interaction.options.getBoolean("close_post") !== false && !(interaction.channel.archived || interaction.channel.locked)) {
             await interaction.channel.setLocked(true);
         }
         if (interaction.options.getBoolean("add_tags") === false) {
