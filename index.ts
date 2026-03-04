@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import initializeCommands from './commands.js';
 import { LoadTagsFromDisk } from './commands/addmovedtag/addmovedtag.js';
+import { LoadGhIdsFromDisk } from './commands/linkgh/linkgh.js';
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ const client = new Client({
 });
 
 LoadTagsFromDisk();
+LoadGhIdsFromDisk();
 
 let commands = new Collection<string, any>();
 const __filename = fileURLToPath(import.meta.url);

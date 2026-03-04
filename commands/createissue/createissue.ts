@@ -3,6 +3,7 @@ import { Octokit } from "@octokit/rest";
 import { permissionRoleName } from "../grantpermission/grantpermission.js";
 import { throttling } from "@octokit/plugin-throttling";
 import { tagsToAdd } from "../addmovedtag/addmovedtag.js";
+import { discordToGithubID, ghIdsFilePath } from "../linkgh/linkgh.js";
 
 if (!process.env.GITHUB_TOKEN) {
     throw new Error("No github token configured");
@@ -62,6 +63,11 @@ export default {
                 .setDescription("Whether or not to add the tags configured by /addmovedtag to the post. On by default")
                 .setRequired(false)
         )
+        .addUserOption(opt => 
+            opt.setName("assignee")
+            .setDescription("User to assign the issue to. Must have github linked with discord.")
+            .setRequired(false)
+        )
         .setContexts(InteractionContextType.Guild),
 
     async execute(interaction: ChatInputCommandInteraction) {
@@ -99,13 +105,23 @@ export default {
             await interaction.editReply("ERROR: Could not find repo");
             return;
         }
+        let ghId;
+        let assignee = interaction.options.get("assignee")?.user;
+        if(assignee){
+            ghId = discordToGithubID.get(assignee.id);
+            if(!ghId){
+                await interaction.editReply("ERROR: The user you are trying to assign does not have a linked github account. Use the /linkgh command to add their github user id.");
+                return;
+            }
+        }
         const res = await gh.issues.create({
             owner,
             repo,
             title: interaction.channel.name,
             type: interaction.options.get("type")?.value?.toString(),
             labels: interaction.options.get("labels")?.value?.toString().split(','),
-            body: `**Issue reported by: ${firstMsg.author.username}:**\n${firstMsg.cleanContent}`
+            body: `**Issue reported by: ${firstMsg.author.username}:**\n${firstMsg.cleanContent}`,
+            assignees: ghId ? [ghId] : undefined
         });
         if (res.status != 201) {
             await interaction.editReply("ERROR: Failed to create github issue");
