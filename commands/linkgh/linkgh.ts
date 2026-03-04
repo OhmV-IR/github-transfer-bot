@@ -30,15 +30,15 @@ export function LoadGhIdsFromDisk() {
 export default {
    data: new SlashCommandBuilder()
       .setName("linkgh")
-      .setDescription("Link a discord user to a github user ID")
+      .setDescription("Link a discord user to a github user")
       .addUserOption(opt =>
          opt.setName("user")
-            .setDescription("User to link to a github ID")
+            .setDescription("User to link to a github account")
             .setRequired(true)
       )
       .addStringOption(opt => 
         opt.setName("ghid")
-           .setDescription("The github user ID to link to the discord user")
+           .setDescription("The github username to link to the discord user")
            .setRequired(true)
       )
       .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
@@ -67,7 +67,7 @@ export default {
       }
       discordToGithubID.set(user.id, ghId);
       SyncGhIDSToDisk();
-      await interaction.editReply(`Linked ${user.user.tag} to github ID ${ghId}`);
+      await interaction.editReply(`Linked ${user.user.tag} to github username ${ghId}`);
       return;
    }
 }

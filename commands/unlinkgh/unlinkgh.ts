@@ -1,5 +1,5 @@
-import { ChatInputCommandInteraction, GuildMember, SlashCommandBuilder, PermissionFlagsBits, InteractionContextType } from "discord.js";
-import { discordToGithubID, ghIdsFilePath, SyncGhIDSToDisk } from "../linkgh/linkgh.js";
+import { ChatInputCommandInteraction, SlashCommandBuilder, PermissionFlagsBits, InteractionContextType } from "discord.js";
+import { discordToGithubID, SyncGhIDSToDisk } from "../linkgh/linkgh.js";
 
 export default {
    data: new SlashCommandBuilder()
@@ -31,7 +31,7 @@ export default {
       }
       discordToGithubID.delete(user.id);
       SyncGhIDSToDisk();
-      await interaction.editReply(`Unlinked ${user.user.tag} from github ID`);
+      await interaction.editReply(`Unlinked ${user.user.tag} from github username`);
       return;
    }
 }
