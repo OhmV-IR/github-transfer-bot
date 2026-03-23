@@ -114,13 +114,17 @@ export default {
                 return;
             }
         }
+        let firstAttachmentString = "";
+            firstMsg.attachments.forEach(attachment => {
+                firstAttachmentString += `\n![${attachment.name}](${attachment.url})`;
+            });
         const res = await gh.issues.create({
             owner,
             repo,
             title: interaction.channel.name,
             type: interaction.options.get("type")?.value?.toString(),
             labels: interaction.options.get("labels")?.value?.toString().split(','),
-            body: `**Issue reported by: ${firstMsg.author.username}:**\n${firstMsg.cleanContent}`,
+            body: `**Issue reported by: ${firstMsg.author.username}:**\n[View original discord thread](${interaction.channel.url})\n${firstMsg.cleanContent}\n${firstAttachmentString}`,
             assignees: ghId ? [ghId] : undefined
         });
         if (res.status != 201) {
