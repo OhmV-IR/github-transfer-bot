@@ -2,7 +2,7 @@ pipeline {
     agent { label 'windows' }
     
     tools {
-        nodejs 'nodie20'
+        nodejs 'node20'
     }
     
     stages {
