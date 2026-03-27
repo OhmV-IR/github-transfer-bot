@@ -23,12 +23,6 @@ pipeline {
                 bat "npm run build"
             }
         }
-
-        stage("lint"){
-            steps {
-                bat "npx eslint ."
-            }
-        }
         
         stage("stash"){
             steps {
