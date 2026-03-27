@@ -57,6 +57,7 @@ pipeline {
                 sh "cp -r dist /opt/github-issue-mover/"
                 sh "sudo systemctl reload-or-restart issuemover"
            }
+        }
     }
     
     post {
