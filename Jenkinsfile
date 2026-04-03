@@ -27,6 +27,7 @@ pipeline {
         stage("stash"){
             steps {
                 stash name: 'build-output', includes: 'dist/**'
+                stash name: 'deps', includes: 'node_modules/**'
             }
         }
 
@@ -45,6 +46,7 @@ pipeline {
                     """
                 }
                 unstash "build-output"
+                unstash "deps"
                 sh "sudo cp -r dist /opt/github-issue-mover/"
                 sh "sudo cp -r node_modules /opt/github-issue-mover/"
                 sh "sudo systemctl reload-or-restart issuemover"
