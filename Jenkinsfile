@@ -32,19 +32,16 @@ pipeline {
 
         stage("deploy"){
             agent { label "pideploytarget" }
+            when {
+                branch 'master'
+            }
             steps {
                 withCredentials([
-                    string(credentialsId: 'DISCORD_TOKEN', variable: 'DISCORD_TOKEN'),
-                    string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN'),
-                    string(credentialsId: 'CLIENT_ID', variable: 'CLIENT_ID')
+                    file(credentialsId: 'ENV_FILE', variable: 'ENV_FILE')
                 ]) {
                     sh """
-                        [ -f /opt/github-transfer-bot/.env ] && rm /opt/github-transfer-bot/.env
-                        {
-                            echo "GITHUB_TOKEN=$GITHUB_TOKEN"
-                            echo "DISCORD_TOKEN=$DISCORD_TOKEN"
-                            echo "CLIENT_ID=$CLIENT_ID"
-                        } >> .env
+                        rm -f /opt/github-transfer-bot/.env
+                        cp ${ENV_FILE} /opt/github-transfer-bot/.env
                     """
                 }
                 unstash "build-output"
