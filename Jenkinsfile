@@ -43,7 +43,7 @@ pipeline {
                 sh "npm ci"
                 sh "npm run build"
                 sh "sudo systemctl stop --quiet issuemover"
-                sh "cp -r . /opt/github-transfer-bot/"
+                sh "sudo cp -r . /opt/github-transfer-bot/"
                 sh "sudo systemctl start issuemover"
            }
         }
