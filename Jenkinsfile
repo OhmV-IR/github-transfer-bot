@@ -46,6 +46,7 @@ pipeline {
                 }
                 unstash "build-output"
                 sh "sudo cp -r dist /opt/github-issue-mover/"
+                sh "sudo cp -r node_modules /opt/github-issue-mover/"
                 sh "sudo systemctl reload-or-restart issuemover"
            }
         }
