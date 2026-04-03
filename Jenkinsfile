@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'linux' }
+    agent { label 'windows' }
     
     tools {
         nodejs 'node20'
