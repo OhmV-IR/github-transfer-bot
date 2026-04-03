@@ -21,13 +21,13 @@ pipeline {
         stage("build"){
             steps {
                 bat "npm run build"
+                bat "powershell Compress-Archive -Path dist, node_modules -Destination build.zip -Force"
             }
         }
         
         stage("stash"){
             steps {
-                stash name: 'build-output', includes: 'dist/**'
-                stash name: 'deps', includes: 'node_modules/**'
+                stash name: 'pkg', includes: 'build.zip'
             }
         }
 
@@ -45,10 +45,8 @@ pipeline {
                         cp ${ENV_FILE} /opt/github-transfer-bot/.env
                     """
                 }
-                unstash "build-output"
-                unstash "deps"
-                sh "sudo cp -r dist /opt/github-issue-mover/"
-                sh "sudo cp -r node_modules /opt/github-issue-mover/"
+                unstash "pkg"
+                sh "sudo unzip build.zip -d /opt/github-issue-mover/"
                 sh "sudo systemctl reload-or-restart issuemover"
            }
         }
