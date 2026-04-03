@@ -21,13 +21,13 @@ pipeline {
         stage("build"){
             steps {
                 bat "npm run build"
-                bat "powershell Compress-Archive -Path dist, node_modules -Destination build.zip -Force"
+                bat "tar -a -c -f build.tar.gz dist node_modules"
             }
         }
         
         stage("stash"){
             steps {
-                stash name: 'pkg', includes: 'build.zip'
+                stash name: 'pkg', includes: 'build.tar.gz'
             }
         }
 
@@ -46,7 +46,7 @@ pipeline {
                     """
                 }
                 unstash "pkg"
-                sh "sudo unzip -o build.zip -d /opt/github-issue-mover/"
+                sh "sudo tar -xzf build.tar.gz -C /opt/github-issue-mover/"
                 sh "sudo systemctl reload-or-restart issuemover"
            }
         }
