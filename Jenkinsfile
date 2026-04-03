@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'windows' }
+    agent { label 'linux' }
     
     tools {
         nodejs 'node20'
@@ -24,12 +24,6 @@ pipeline {
                 bat "tar -a -c -f build.tar.gz dist node_modules"
             }
         }
-        
-        stage("stash"){
-            steps {
-                stash name: 'pkg', includes: 'build.tar.gz'
-            }
-        }
 
         stage("deploy"){
             agent { label "pideploytarget" }
@@ -37,17 +31,20 @@ pipeline {
                 branch 'main'
             }
             steps {
+                checkout scm
                 withCredentials([
                     file(credentialsId: 'ENV_FILE', variable: 'ENV_FILE')
                 ]) {
                     sh """
                         rm -f /opt/github-transfer-bot/.env
-                        cp ${ENV_FILE} /opt/github-transfer-bot/.env
+                        cp ${ENV_FILE} .env
                     """
                 }
-                unstash "pkg"
-                sh "sudo tar -xzf build.tar.gz -C /opt/github-issue-mover/"
-                sh "sudo systemctl reload-or-restart issuemover"
+                sh "npm ci"
+                sh "npm run build"
+                sh "sudo systemctl stop --quiet issuemover"
+                sh "cp -r . /opt/github-transfer-bot/"
+                sh "sudo systemctl start issuemover"
            }
         }
     }
