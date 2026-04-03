@@ -46,7 +46,7 @@ pipeline {
                     """
                 }
                 unstash "pkg"
-                sh "sudo unzip build.zip -d /opt/github-issue-mover/"
+                sh "sudo unzip -o build.zip -d /opt/github-issue-mover/"
                 sh "sudo systemctl reload-or-restart issuemover"
            }
         }
