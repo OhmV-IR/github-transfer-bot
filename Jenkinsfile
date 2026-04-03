@@ -36,8 +36,8 @@ pipeline {
                     file(credentialsId: 'ENV_FILE', variable: 'ENV_FILE')
                 ]) {
                     sh """
-                        rm -f /opt/github-transfer-bot/.env
-                        cp ${ENV_FILE} .env
+                        sudo rm -f /opt/github-transfer-bot/.env
+                        sudo cp ${ENV_FILE} .env
                     """
                 }
                 sh "npm ci"
