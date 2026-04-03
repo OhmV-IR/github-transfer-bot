@@ -33,7 +33,7 @@ pipeline {
         stage("deploy"){
             agent { label "pideploytarget" }
             when {
-                branch 'master'
+                branch 'main'
             }
             steps {
                 withCredentials([
