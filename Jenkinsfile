@@ -28,7 +28,11 @@ pipeline {
         stage("deploy"){
             agent { label "pideploytarget" }
             when {
-                branch 'main'
+                beforeAgent true
+                allOf {
+                    branch 'main'
+                    not { changeRequest() }
+                }
             }
             steps {
                 checkout scm
