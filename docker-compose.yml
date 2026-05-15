@@ -1,6 +1,9 @@
+version: "3.9"
 services:
   github-transfer-bot:
-    image: github-transfer-bot
+    image: registry.bgfamily.ca/github-transfer-bot:latest
+    container_name: github-transfer-bot
+    restart: unless-stopped
     environment:
         DISCORD_TOKEN: ${DISCORD_TOKEN}
         GITHUB_TOKEN: ${GITHUB_TOKEN}
