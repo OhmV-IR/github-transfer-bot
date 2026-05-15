@@ -1,13 +1,12 @@
 pipeline {
     agent none
     
-    tools {
-        nodejs 'node20'
-    }
-    
     stages {
         stage("Build"){
             agent { label 'linux' }
+            tools {
+                nodejs 'node20'
+            }
             steps {
                 checkout scm
                 sh "npm i"
@@ -31,15 +30,6 @@ pipeline {
                     }
                 }
             }
-        }
-    }
-    
-    post {
-        success {
-            echo "ran successfully"
-        }
-        failure {
-            echo "pipeline fail"
         }
     }
 }
