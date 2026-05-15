@@ -1,29 +1,32 @@
 import { ChatInputCommandInteraction, GuildMember, SlashCommandBuilder, PermissionFlagsBits, InteractionContextType } from "discord.js";
 import path from "node:path";
 import fs from "node:fs";
+import dotenv from "dotenv";
+dotenv.config();
 
 export let discordToGithubID: Map<string, string> = new Map();
-export const ghIdsFilePath = "./ghids.json";
+export const ghIdsFilePath = process.env.DATA_DIR! + "/ghids.json";
 export const ghIdsDir = path.dirname(ghIdsFilePath);
 
 export function SyncGhIDSToDisk() {
-    if(!fs.existsSync(ghIdsDir)) {
+    if (!fs.existsSync(ghIdsDir)) {
         fs.mkdirSync(ghIdsDir, { recursive: true });
     }
-    fs.writeFileSync(ghIdsFilePath, JSON.stringify(discordToGithubID));
+
+    const obj = Object.fromEntries(discordToGithubID);
+    fs.writeFileSync(ghIdsFilePath, JSON.stringify(obj, null, 2));
 }
 
 export function LoadGhIdsFromDisk() {
-    let fileContent: string;
     try {
-        fileContent = fs.readFileSync(ghIdsFilePath, "utf-8");
+        const fileContent = fs.readFileSync(ghIdsFilePath, "utf-8");
+        const parsed = JSON.parse(fileContent);
+
+        if (parsed && typeof parsed === "object") {
+            discordToGithubID = new Map(Object.entries(parsed));
+        }
     } catch (err) {
         console.error("failed to load github IDs from disk: " + err);
-        return;
-    }
-    const parsed = JSON.parse(fileContent);
-    if (parsed) {
-        discordToGithubID = new Map(Object.entries(parsed));
     }
 }
 
