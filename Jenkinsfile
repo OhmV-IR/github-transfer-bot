@@ -1,55 +1,32 @@
 pipeline {
-    agent { label 'windows' }
+    agent none
     
     tools {
         nodejs 'node20'
     }
     
     stages {
-        stage("Checkout") {
-            steps {
-                checkout scm
-            }
-        }
-        
-        stage("deps"){
-            steps {
-                bat "npm ci"
-            }
+        stage("Build"){
+            agent { label 'linux' }
+            checkout scm
+            sh "npm i"
+            sh "npm run build"
+            stash name: 'dist-dir', includes: 'dist/**'
         }
 
-        stage("build"){
-            steps {
-                bat "npm run build"
-                bat "tar -a -c -f build.tar.gz dist node_modules"
-            }
-        }
-
-        stage("deploy"){
-            agent { label "pideploytarget" }
-            when {
-                beforeAgent true
-                allOf {
-                    branch 'main'
-                    not { changeRequest() }
+        stage("Build docker image"){
+            agent { label 'docker-linux' }
+            checkout scm
+            unstash 'dist-dir'
+            sh "docker build -t github-transfer-bot:latest ."
+            script {
+                if(env.BRANCH_NAME == 'main'){
+                    sh "docker tag github-transfer-bot:latest registry.bgfamily.ca/github-transfer-bot:latest"
+                    sh "docker push registry.bgfamily.ca/github-transfer-bot:latest"
+                    sh "docker tag github-transfer-bot:latest ohmivr/github-transfer-bot:latest"
+                    sh "docker push ohmivr/github-transfer-bot:latest"
                 }
             }
-            steps {
-                checkout scm
-                withCredentials([
-                    file(credentialsId: 'ENV_FILE', variable: 'ENV_FILE')
-                ]) {
-                    sh """
-                        sudo rm -f /opt/github-transfer-bot/.env
-                        sudo cp ${ENV_FILE} .env
-                    """
-                }
-                sh "npm ci"
-                sh "npm run build"
-                sh "sudo systemctl stop --quiet issuemover"
-                sh "sudo cp -r . /opt/github-transfer-bot/"
-                sh "sudo systemctl start issuemover"
-           }
         }
     }
     

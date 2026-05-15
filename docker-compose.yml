@@ -1,0 +1,13 @@
+services:
+  github-transfer-bot:
+    image: github-transfer-bot
+    environment:
+        DISCORD_TOKEN: ${DISCORD_TOKEN}
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+        CLIENT_ID: ${CLIENT_ID}
+        DATA_DIR: /opt/appdata
+    volumes:
+      - appdata:/opt/appdata
+
+volumes:
+  appdata:

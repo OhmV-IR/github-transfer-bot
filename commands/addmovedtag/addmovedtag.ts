@@ -1,29 +1,32 @@
 import { ChatInputCommandInteraction, InteractionContextType, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import fs from "node:fs";
 import path from "node:path";
+import dotenv from "dotenv";
+dotenv.config();
 
 export let tagsToAdd: Map<string, string[]> = new Map();
-export const tagsFilePath = "./movedTags.json";
+export const tagsFilePath = process.env.DATA_DIR! + "/movedTags.json";
 export const tagsDir = path.dirname(tagsFilePath);
 
 export function SyncTagsToDisk() {
-    if(!fs.existsSync(tagsDir)) {
+    if (!fs.existsSync(tagsDir)) {
         fs.mkdirSync(tagsDir, { recursive: true });
     }
-    fs.writeFileSync(tagsFilePath, JSON.stringify(tagsToAdd));
+
+    const obj = Object.fromEntries(tagsToAdd);
+    fs.writeFileSync(tagsFilePath, JSON.stringify(obj, null, 2));
 }
 
 export function LoadTagsFromDisk() {
-    let fileContent: string;
     try {
-        fileContent = fs.readFileSync(tagsFilePath, "utf-8");
+        const fileContent = fs.readFileSync(tagsFilePath, "utf-8");
+        const parsed = JSON.parse(fileContent);
+
+        if (parsed && typeof parsed === "object") {
+            tagsToAdd = new Map(Object.entries(parsed));
+        }
     } catch (err) {
         console.error("failed to load tags from disk: " + err);
-        return;
-    }
-    const parsed = JSON.parse(fileContent);
-    if (parsed && parsed instanceof Map) {
-        tagsToAdd = parsed;
     }
 }
 

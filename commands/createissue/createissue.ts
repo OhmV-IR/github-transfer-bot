@@ -3,7 +3,7 @@ import { Octokit } from "@octokit/rest";
 import { permissionRoleName } from "../grantpermission/grantpermission.js";
 import { throttling } from "@octokit/plugin-throttling";
 import { tagsToAdd } from "../addmovedtag/addmovedtag.js";
-import { discordToGithubID, ghIdsFilePath } from "../linkgh/linkgh.js";
+import { discordToGithubID } from "../linkgh/linkgh.js";
 
 if (!process.env.GITHUB_TOKEN) {
     throw new Error("No github token configured");
