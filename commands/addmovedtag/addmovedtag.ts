@@ -25,6 +25,8 @@ export function LoadTagsFromDisk() {
         if (parsed && typeof parsed === "object") {
             tagsToAdd = new Map(Object.entries(parsed));
         }
+	console.log("Loaded tags from disk");
+	console.log(tagsToAdd);
     } catch (err) {
         console.error("failed to load tags from disk: " + err);
     }
