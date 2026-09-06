@@ -24,6 +24,8 @@ export function LoadGhIdsFromDisk() {
 
         if (parsed && typeof parsed === "object") {
             discordToGithubID = new Map(Object.entries(parsed));
+	    console.log("Loaded new ghids map from disk");
+	    console.log(discordToGithubID);
         }
     } catch (err) {
         console.error("failed to load github IDs from disk: " + err);
